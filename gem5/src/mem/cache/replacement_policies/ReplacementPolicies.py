@@ -90,3 +90,9 @@ class RRIPRP(BRRIPRP):
 class NRURP(BRRIPRP):
     btp = 0
     max_RRPV = 1
+
+class FBRP(BaseReplacementPolicy):
+    type = 'FBRP'
+    cxx_class = 'FBRP'
+    cxx_header = "mem/cache/replacement_policies/fb_rp.hh"
+
