@@ -30,7 +30,7 @@
             "slave": {
                 "peer": [
                     "system.system_port", 
-                    "system.l2.mem_side", 
+                    "system.l3.mem_side", 
                     "system.cpu.interrupts.int_master"
                 ], 
                 "role": "SLAVE"
@@ -60,6 +60,41 @@
         "cxx_class": "System", 
         "work_begin_cpu_id_exit": -1, 
         "load_offset": 0, 
+        "tol3bus": {
+            "point_of_coherency": false, 
+            "system": "system", 
+            "response_latency": 1, 
+            "cxx_class": "CoherentXBar", 
+            "forward_latency": 0, 
+            "clk_domain": "system.cpu_clk_domain", 
+            "point_of_unification": false, 
+            "width": 32, 
+            "eventq_index": 0, 
+            "default_p_state": "UNDEFINED", 
+            "p_state_clk_gate_max": 1000000000000, 
+            "master": {
+                "peer": [
+                    "system.l3.cpu_side"
+                ], 
+                "role": "MASTER"
+            }, 
+            "type": "CoherentXBar", 
+            "frontend_latency": 1, 
+            "slave": {
+                "peer": [
+                    "system.l2.mem_side"
+                ], 
+                "role": "SLAVE"
+            }, 
+            "p_state_clk_gate_min": 1000, 
+            "snoop_filter": null, 
+            "power_model": [], 
+            "path": "system.tol3bus", 
+            "snoop_response_latency": 1, 
+            "name": "tol3bus", 
+            "p_state_clk_gate_bins": 20, 
+            "use_default_range": false
+        }, 
         "work_begin_exit_count": 0, 
         "p_state_clk_gate_min": 1000, 
         "memories": [
@@ -515,7 +550,7 @@
                         "maxStackSize": 67108864, 
                         "ppid": 0, 
                         "type": "Process", 
-                        "cwd": "/home/yann/gem5", 
+                        "cwd": "/home/yann/gem5-nvmain/gem5", 
                         "pgid": 100, 
                         "simpoint": 0, 
                         "euid": 100, 
@@ -679,7 +714,7 @@
             "default_p_state": "UNDEFINED", 
             "p_state_clk_gate_max": 1000000000000, 
             "mem_side": {
-                "peer": "system.membus.slave[1]", 
+                "peer": "system.tol3bus.slave[0]", 
                 "role": "MASTER"
             }, 
             "mshrs": 20, 
@@ -722,6 +757,76 @@
             "p_state_clk_gate_bins": 20, 
             "sequential_access": false, 
             "assoc": 8
+        }, 
+        "l3": {
+            "replacement_policy": {
+                "eventq_index": 0, 
+                "path": "system.l3.replacement_policy", 
+                "type": "LRURP", 
+                "name": "replacement_policy", 
+                "cxx_class": "LRURP"
+            }, 
+            "cpu_side": {
+                "peer": "system.tol3bus.master[0]", 
+                "role": "SLAVE"
+            }, 
+            "clusivity": "mostly_incl", 
+            "prefetcher": null, 
+            "system": "system", 
+            "write_buffers": 8, 
+            "response_latency": 20, 
+            "cxx_class": "Cache", 
+            "size": 16777216, 
+            "type": "Cache", 
+            "clk_domain": "system.cpu_clk_domain", 
+            "max_miss_count": 0, 
+            "eventq_index": 0, 
+            "default_p_state": "UNDEFINED", 
+            "p_state_clk_gate_max": 1000000000000, 
+            "mem_side": {
+                "peer": "system.membus.slave[1]", 
+                "role": "MASTER"
+            }, 
+            "mshrs": 20, 
+            "writeback_clean": false, 
+            "p_state_clk_gate_min": 1000, 
+            "tags": {
+                "size": 16777216, 
+                "tag_latency": 20, 
+                "replacement_policy": "system.l3.replacement_policy", 
+                "name": "tags", 
+                "p_state_clk_gate_min": 1000, 
+                "eventq_index": 0, 
+                "p_state_clk_gate_bins": 20, 
+                "default_p_state": "UNDEFINED", 
+                "clk_domain": "system.cpu_clk_domain", 
+                "power_model": [], 
+                "sequential_access": false, 
+                "assoc": 16, 
+                "warmup_percentage": 0, 
+                "cxx_class": "BaseSetAssoc", 
+                "p_state_clk_gate_max": 1000000000000, 
+                "path": "system.l3.tags", 
+                "block_size": 64, 
+                "type": "BaseSetAssoc", 
+                "data_latency": 20
+            }, 
+            "tgts_per_mshr": 12, 
+            "demand_mshr_reserve": 1, 
+            "power_model": [], 
+            "addr_ranges": [
+                "0:18446744073709551615:0:0:0:0"
+            ], 
+            "is_read_only": false, 
+            "warmup_percentage": 0, 
+            "prefetch_on_access": false, 
+            "path": "system.l3", 
+            "data_latency": 20, 
+            "tag_latency": 20, 
+            "name": "l3", 
+            "p_state_clk_gate_bins": 20, 
+            "sequential_access": false, 
+            "assoc": 16
         }, 
         "cpu_voltage_domain": {
             "name": "cpu_voltage_domain", 

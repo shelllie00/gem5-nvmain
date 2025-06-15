@@ -88,7 +88,6 @@ def addNoISAOptions(parser):
                       default="512MB",
                       help="Specify the physical memory size (single memory)")
 
-
     parser.add_option("--memchecker", action="store_true")
 
     # Cache Options

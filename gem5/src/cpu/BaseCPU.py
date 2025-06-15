@@ -63,6 +63,7 @@ from Platform import Platform
 
 default_tracer = ExeTracer()
 
+
 if buildEnv['TARGET_ISA'] == 'alpha':
     from AlphaTLB import AlphaDTB as ArchDTB, AlphaITB as ArchITB
     from AlphaInterrupts import AlphaInterrupts
