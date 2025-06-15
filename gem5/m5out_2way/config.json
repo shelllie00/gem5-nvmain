@@ -776,7 +776,7 @@
             "write_buffers": 8, 
             "response_latency": 20, 
             "cxx_class": "Cache", 
-            "size": 1048576, 
+            "size": 65536, 
             "type": "Cache", 
             "clk_domain": "system.cpu_clk_domain", 
             "max_miss_count": 0, 
@@ -791,7 +791,7 @@
             "writeback_clean": false, 
             "p_state_clk_gate_min": 1000, 
             "tags": {
-                "size": 1048576, 
+                "size": 65536, 
                 "tag_latency": 20, 
                 "replacement_policy": "system.l3.replacement_policy", 
                 "name": "tags", 
