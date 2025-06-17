@@ -96,3 +96,8 @@ class FBRP(BaseReplacementPolicy):
     cxx_class = 'FBRP'
     cxx_header = "mem/cache/replacement_policies/fb_rp.hh"
 
+class CFRRP(BaseReplacementPolicy):
+    type = 'CFRRP'
+    cxx_class = 'CFRRP'
+    cxx_header = "mem/cache/replacement_policies/cfr.hh"
+
