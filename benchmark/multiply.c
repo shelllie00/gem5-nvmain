@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#define SIZE 100
+#define SIZE 300
 int main()
 {
  	int size = SIZE;
