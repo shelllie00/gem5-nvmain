@@ -15,7 +15,7 @@
 - [x] (Q5) Test the performance of write back and write through policy based on 4-way associative cache with isscc_pcm(15%) 
 必須跑 benchmark multiply 在 write through 跟 write back ( gem5 default 使用 write back，可以用 write request 的數量判斷 write through 是否成功 )
  
-- [ ] Bonus (10%) Design last level cache policy to reduce the energy consumption of pcm_based main memory
+- [x] Bonus (10%) Design last level cache policy to reduce the energy consumption of pcm_based main memory
  Baseline:LRU
  
 - - -
@@ -32,9 +32,6 @@
 #### (Q1) GEM5 + NVMAIN BUILD-UP (40%)
 
 1. 就跟著給的教學做
-:::info
-可以多給一點 thread，不然我只用 2 個 build 很久，大概一個多小時。但只有這次 build 會最久，後面都蠻快的
-:::
 2. 然後混合編譯
 <pre style="white-space: pre-wrap;">scons EXTRAS=../NVmain build/X86/gem5.opt   </pre>
     
@@ -46,16 +43,14 @@
     
 #### (Q2) Enable L3 last level cache in GEM5 + NVMAIN (15%) 
 
-:::info
-需要修改的檔案在gem5資料夾中的
-(1) Options.py
-(2) Caches.py
-(3) Xbar.py
-(4) BaseCPU.py
-(5) CacheConfig.py
-前四個檔案只是增加 L3 cache 的 parameter ，照著 L2 cache 的設定去做模仿就可以。CacheConfig.py 需要讓 L3 cache 連接整個 Gem5 系統，這邊要注意 L2 跟 L3 這兩個 cache 的關係，要讓系統在已使用 L2 cache 的情況下才能使用 L3 cache，所以要注意修改的時候有沒有滿足這個條件
-\- from Final_Project_說明.pdf
-:::
+> 需要修改的檔案在gem5資料夾中的
+> (1) Options.py
+> (2) Caches.py
+> (3) Xbar.py
+> (4) BaseCPU.py
+> (5) CacheConfig.py
+> 前四個檔案只是增加 L3 cache 的 parameter ，照著 L2 cache 的設定去做模仿就可以。CacheConfig.py 需要讓 L3 cache 連接整個 Gem5 系統，這邊要注意 L2 跟 L3 這兩個 cache 的關係，要讓系統在已使用 L2 cache 的情況下才能使用 L3 cache，所以要注意修改的時候有沒有滿足這個條件
+> \- from Final_Project_說明.pdf
 
 1. 修改 gem5/configs/common/Caches.py
         
@@ -232,10 +227,8 @@
 - - -         
     
 #### (Q4) Modify last level cache policy based on frequency based replacement policy (15%)
-需要自己手刻 Frequency based replacement policy
-:::info
-Frequency LRU: 每個 block 有自己的 F 值，每 access 一次就 F++，沒位置取代 F 值最小的，若有相同 F 值，取代最老的 block
-:::
+
+> Frequency LRU: 每個 block 有自己的 F 值，每 access 一次就 F++，沒位置取代 F 值最小的，若有相同 F 值，取代最老的 block
 
 1. 建立 frequency_rp.hh 和 frequency_rp.cc
     * 到 src/mem/cache/replacement_policies/ 建立 frequency_rp.hh 和 frequency_rp.cc
@@ -451,14 +444,23 @@ Frequency LRU: 每個 block 有自己的 F 值，每 access 一次就 F++，沒�
     ```jsx
     cp -r m5out m5out_fbrp
     ```
+    
+7. 比較一下（這裡是跑 multiply）
+    * baseline
+      
+      ![image](https://github.com/user-attachments/assets/4c919506-b3a9-4eae-a7e4-bb6ff4ad32d3)
+      
+    * frequency based replacement policy
+      
+      ![image](https://github.com/user-attachments/assets/e4157ce7-117e-4b91-966d-7db386db65ad)
+
+    
 - - -
 
 #### (Q5) Test the performance of write back and write through policy based on 4-way associative cache with isscc_pcm(15%)
 
-:::info
-在 /src/mem/cache 底下有 [cache.cc](http://cache.cc) 和 [base.cc](http://base.cc) 可以研究一下 write back 是怎麼做的
-\- from Final_Project_說明.pdf
-:::
+> 在 /src/mem/cache 底下有 [cache.cc](http://cache.cc) 和 [base.cc](http://base.cc) 可以研究一下 write back 是怎麼做的
+> \- from Final_Project_說明.pdf
         
 1. 先編譯 multiply.c        
     ```
@@ -532,11 +534,188 @@ Frequency LRU: 每個 block 有自己的 F 值，每 access 一次就 F++，沒�
     cp -r m5out m5out_writethrough
     ```
         
-6. 比較一下 wb 和 wt（/result/q5 這裡的數據是跑 SIZE 100 所以比較小，result/q5_new 是跑 SIZE 300）
-     ![image](https://github.com/user-attachments/assets/2966c43a-9b6b-477d-b940-5c05ffeb5acf)
+6. 比較一下 write back 和 write through 的 totalWriteRequests
+   * write back
+     
+  ![image](https://github.com/user-attachments/assets/665ef81d-5592-4c95-b1ce-5776e27f59b2)
+
+   * write through
+
+     ![image](https://github.com/user-attachments/assets/046c49fe-9c52-41cc-8394-f19a34c67185)
+
 
 
    
 ---
 #### Bonus (10%) Design last level cache policy to reduce the energy consumption of pcm_based main memory Baseline:LRU
-* 還沒做
+
+> LRU 是最常見的快取替換策略，它會淘汰**最久未被使用的資料塊（block）**。然而，**對 PCM 而言，LRU 沒有考慮寫入代價。**
+> 可以考慮使用 **Clean-First Replacement Policy（CFR）**
+> - 在 victim selection 時，從 LRU list 中挑選最老的 **clean block**。
+> - 如果都為 dirty block，則退回原 LRU 策略。
+>
+> ### 在 CFR 中，當 cache 需要淘汰一個 block 時：
+> 1. 先從所有 candidate blocks 中找出最久未使用的 clean block
+> 2. 若找到 clean block
+>     - 則選擇它作為 victim
+> 4. 若沒有 clean block（即全部都是 dirty block）：
+>     - 退回使用 LRU 選擇 victim
+
+以下步驟和 Q4 FBPR 略同
+1. src/mem/cache/replacement_policies/ 創建 CFR 的 .hh 和 .cc
+    * cfr.hh
+    ```cpp
+    #ifndef __MEM_CACHE_REPLACEMENT_POLICIES_CFR_RP_HH__
+    #define __MEM_CACHE_REPLACEMENT_POLICIES_CFR_RP_HH__
+
+    #include "mem/cache/replacement_policies/base.hh"
+    #include "params/CFRRP.hh"
+
+    struct CFRRPParams;
+
+    class CFRRP : public BaseReplacementPolicy {
+    protected:
+        /** Clean-First replacement data structure */
+        struct CFRReplData : ReplacementData {
+            /** Tick of last access */
+            Tick lastTouchTick;
+
+            /** Default constructor */
+            CFRReplData() : lastTouchTick(0) {}
+        };
+
+    public:
+        /** Typedef for parameter struct */
+        typedef CFRRPParams Params;
+
+        /** Constructor */
+        CFRRP(const Params* p);
+
+        /** Destructor */
+        ~CFRRP() {}
+
+        /** Invalidate: no-op for CFR */
+        void invalidate(const std::shared_ptr<ReplacementData>& replacement_data)
+            const override;
+
+        /** Touch: update access time */
+        void touch(const std::shared_ptr<ReplacementData>& replacement_data) const
+            override;
+
+        /** Reset: update last access time on insertion */
+        void reset(const std::shared_ptr<ReplacementData>& replacement_data) const
+            override;
+
+        /** Select victim: prefer clean and LRU */
+        ReplaceableEntry* getVictim(const ReplacementCandidates& candidates) const
+            override;
+
+        /** Instantiate a new replacement data entry */
+        std::shared_ptr<ReplacementData> instantiateEntry() override;
+    };
+
+    #endif // __MEM_CACHE_REPLACEMENT_POLICIES_CFR_RP_HH__
+    ```
+
+    * cfr.cc
+    ```cpp
+    #include "mem/cache/replacement_policies/cfr.hh"
+    #include "params/CFRRP.hh"
+    #include "base/logging.hh"
+    #include "mem/cache/base.hh"
+
+    CFRRP::CFRRP(const Params* p) : BaseReplacementPolicy(p)
+    {
+    }
+
+    void
+    CFRRP::invalidate(const std::shared_ptr<ReplacementData>& replacement_data) const
+    {
+        // No specific invalidation logic needed
+    }
+
+    void
+    CFRRP::touch(const std::shared_ptr<ReplacementData>& replacement_data) const
+    {
+        std::static_pointer_cast<CFRReplData>(replacement_data)->lastTouchTick = curTick();
+    }
+
+    void
+    CFRRP::reset(const std::shared_ptr<ReplacementData>& replacement_data) const
+    {
+        std::static_pointer_cast<CFRReplData>(replacement_data)->lastTouchTick = curTick();
+    }
+
+    std::shared_ptr<ReplacementData>
+    CFRRP::instantiateEntry()
+    {
+        return std::shared_ptr<ReplacementData>(new CFRReplData());
+    }
+
+    ReplaceableEntry*
+    CFRRP::getVictim(const ReplacementCandidates& candidates) const
+    {
+        assert(!candidates.empty());
+
+        ReplaceableEntry* victim = nullptr;
+        Tick oldestTick = std::numeric_limits<Tick>::max();
+
+        // Step 1: Try to find oldest CLEAN block
+        for (const auto& entry : candidates) {
+        CacheBlk* blk = static_cast<CacheBlk*>(entry);
+            if (!blk->isDirty()) {
+                auto data = std::static_pointer_cast<CFRReplData>(
+                    entry->replacementData);
+                if (data->lastTouchTick < oldestTick) {
+                    oldestTick = data->lastTouchTick;
+                    victim = entry;
+                }
+            }
+        }
+
+        if (victim != nullptr)
+            return victim;
+
+        // Step 2: Fallback to LRU among all (dirty) blocks
+        oldestTick = std::numeric_limits<Tick>::max();
+        for (const auto& entry : candidates) {
+            auto data = std::static_pointer_cast<CFRReplData>(
+                entry->replacementData);
+            if (data->lastTouchTick < oldestTick) {
+                oldestTick = data->lastTouchTick;
+                victim = entry;
+            }
+        }
+
+        assert(victim != nullptr);
+        return victim;
+    }
+
+
+    CFRRP* CFRRPParams::create()
+    {
+        return new CFRRP(this);
+    }
+    ```
+2. 加入 Source('cfr.cc')
+到 src/mem/cache/replacement_policies/SConscript 加入
+
+    ```jsx
+    Source('cfr.cc')
+    ```
+
+3. 同個資料夾下修改 ReplacementPolicies.py
+    * 新增 class CFRP （同 Q4）
+4. 修改 /configs/common/Cache.py
+
+    * L3Cache 裡面加一個 replacement_policy（同 Q4）
+5. 再編譯一次
+6. 跑 multiply 
+7. 比較一下
+    * baseline
+
+      ![image](https://github.com/user-attachments/assets/918cad13-9653-4d9f-b964-651c20db6d45)
+
+    * CFR
+  
+      ![image](https://github.com/user-attachments/assets/d05ef424-9620-43ee-870c-6e00765cef80)
