@@ -711,11 +711,13 @@
     * L3Cache 裡面加一個 replacement_policy（同 Q4）
 5. 再編譯一次
 6. 跑 multiply 
-7. 比較一下
+7. 比較一下 activeEnergy
     * baseline
+    
+     ![image](https://github.com/user-attachments/assets/7b316d79-0fbc-427c-bd4b-a8fa165616f9)
 
-      ![image](https://github.com/user-attachments/assets/918cad13-9653-4d9f-b964-651c20db6d45)
 
     * CFR
-  
-      ![image](https://github.com/user-attachments/assets/d05ef424-9620-43ee-870c-6e00765cef80)
+
+   ![image](https://github.com/user-attachments/assets/4cf0fc40-13ce-4b04-92ce-c5b56118e168)
+
