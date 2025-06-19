@@ -230,10 +230,10 @@
 
 > Frequency LRU: 每個 block 有自己的 F 值，每 access 一次就 F++，沒位置取代 F 值最小的，若有相同 F 值，取代最老的 block
 
-1. 建立 frequency_rp.hh 和 frequency_rp.cc
-    * 到 src/mem/cache/replacement_policies/ 建立 frequency_rp.hh 和 frequency_rp.cc
+1. 建立 fb_rp.hh 和 fb_rp.cc
+    * 到 src/mem/cache/replacement_policies/ 建立 fb_rp.hh 和 fb_rp.cc
         
-    * frequency_rp.hh 程式碼：
+    * fb_rp.hh 程式碼：
         ```cpp
         #ifndef __MEM_CACHE_REPLACEMENT_POLICIES_FB_RP_HH__
         #define __MEM_CACHE_REPLACEMENT_POLICIES_FB_RP_HH__
@@ -318,7 +318,7 @@
         #endif // __MEM_CACHE_REPLACEMENT_POLICIES_FB_RP_HH__
         ```
         
-    * frequency_rp.cc 程式碼：
+    * fb_rp.cc 程式碼：
         
         ```cpp
         #include "mem/cache/replacement_policies/fb_rp.hh"
@@ -408,7 +408,7 @@
         
 3. 同個資料夾下修改 ReplacementPolicies.py
         
-    * 新增 class FrequencyRP
+    * 新增 class FBRP
     ```py
     class FBRP(BaseReplacementPolicy):
     type = 'FBRP'
